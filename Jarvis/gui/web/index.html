@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS HUD</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="hud-container">
+        <!-- AI Core Visualizer -->
+        <div class="core-wrapper">
+            <div class="core-ring outer"></div>
+            <div class="core-ring middle"></div>
+            <div class="core-ring inner"></div>
+            <div class="core-center" id="voice-core"></div>
+        </div>
+
+        <!-- Status Panel -->
+        <div class="glass-panel status-panel">
+            <div class="panel-header">
+                <span class="glitch-text" data-text="SYSTEM STATUS">SYSTEM STATUS</span>
+                <div class="status-indicator" id="system-status"></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">CPU</span>
+                    <span class="stat-value" id="cpu-val">0%</span>
+                    <div class="progress-bar"><div class="progress-fill" id="cpu-bar"></div></div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">RAM</span>
+                    <span class="stat-value" id="ram-val">0%</span>
+                    <div class="progress-bar"><div class="progress-fill" id="ram-bar"></div></div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">PWR</span>
+                    <span class="stat-value" id="bat-val">100%</span>
+                    <div class="progress-bar"><div class="progress-fill" id="bat-bar"></div></div>
+                </div>
+            </div>
+            <div class="time-display" id="time-display">00:00:00</div>
+        </div>
+
+        <!-- Communication Log -->
+        <div class="glass-panel comms-panel">
+            <div class="panel-header">
+                <span>COMMUNICATIONS</span>
+            </div>
+            <div class="log-container" id="log-container">
+                <div class="log-entry system">JARVIS ON-LINE</div>
+            </div>
+            <div class="input-container">
+                <input type="text" id="cmd-input" placeholder="Enter command override..." autocomplete="off">
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls-panel">
+            <button class="hud-btn start-btn" id="toggle-btn" onclick="toggleJarvis()">INITIALIZE</button>
+            <button class="hud-btn close-btn" onclick="closeJarvis()">TERMINATE</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

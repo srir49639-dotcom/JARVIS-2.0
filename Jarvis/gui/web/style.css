@@ -1,0 +1,345 @@
+:root {
+    --core-color: #00f3ff;
+    --core-glow: rgba(0, 243, 255, 0.6);
+    --panel-bg: rgba(6, 11, 25, 0.45);
+    --panel-border: rgba(0, 243, 255, 0.3);
+    --text-primary: #e0ffff;
+    --text-secondary: #8ab4f8;
+    --accent-red: #ff3366;
+    --accent-green: #00ff88;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    background: transparent;
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+.hud-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    background: radial-gradient(circle at center, transparent 30%, rgba(0, 5, 15, 0.4) 100%);
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1), inset 0 0 15px rgba(0, 243, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+.panel-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--core-color);
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-shadow: 0 0 5px var(--core-glow);
+}
+
+/* AI Core (Center) */
+.core-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+
+.core-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid transparent;
+}
+
+.outer {
+    width: 100%;
+    height: 100%;
+    border-top: 2px solid var(--core-color);
+    border-bottom: 2px solid var(--core-color);
+    animation: spin 10s linear infinite;
+    opacity: 0.5;
+}
+
+.middle {
+    width: 80%;
+    height: 80%;
+    border-left: 2px solid var(--core-color);
+    border-right: 2px solid var(--core-color);
+    animation: spin-reverse 7s linear infinite;
+    opacity: 0.7;
+}
+
+.inner {
+    width: 60%;
+    height: 60%;
+    border-top: 3px dashed var(--core-color);
+    animation: spin 5s linear infinite;
+}
+
+.core-center {
+    width: 45%;
+    height: 45%;
+    background: radial-gradient(circle, var(--core-color) 0%, transparent 70%);
+    border-radius: 50%;
+    box-shadow: 0 0 30px var(--core-glow), inset 0 0 20px #fff;
+    animation: pulse 2s ease-in-out infinite alternate;
+}
+
+/* Voice active state */
+.core-center.active {
+    animation: pulse-fast 0.2s ease-in-out infinite alternate, hue-rotate 2s linear infinite;
+    box-shadow: 0 0 50px var(--core-color), inset 0 0 30px #fff;
+}
+
+/* Left Panel - Status */
+.status-panel {
+    width: 300px;
+    height: auto;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--accent-red);
+    box-shadow: 0 0 8px var(--accent-red);
+    transition: background-color 0.3s;
+}
+
+.status-indicator.listening {
+    background-color: var(--accent-green);
+    box-shadow: 0 0 10px var(--accent-green);
+    animation: blink 1s infinite alternate;
+}
+
+.stat-item {
+    margin-bottom: 15px;
+}
+
+.stat-label {
+    display: inline-block;
+    width: 50px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    float: right;
+    font-weight: 700;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-top: 5px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--core-color);
+    width: 0%;
+    box-shadow: 0 0 5px var(--core-color);
+    transition: width 0.5s ease-out;
+}
+
+.time-display {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 15px;
+    color: var(--core-color);
+    text-shadow: 0 0 8px var(--core-glow);
+}
+
+/* Right Panel - Comms */
+.comms-panel {
+    width: 350px;
+    height: 70%;
+}
+
+.log-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--core-color) transparent;
+}
+
+.log-entry {
+    font-size: 1.1rem;
+    padding: 8px;
+    border-radius: 5px;
+    background: rgba(0, 243, 255, 0.05);
+    border-left: 3px solid var(--core-color);
+    animation: slide-in 0.3s ease-out;
+}
+
+.log-entry.user {
+    border-left-color: var(--accent-green);
+    color: #fff;
+}
+
+.log-entry.system {
+    border-left-color: var(--text-secondary);
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.input-container input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    color: var(--text-primary);
+    padding: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    outline: none;
+    transition: box-shadow 0.3s;
+}
+
+.input-container input:focus {
+    box-shadow: 0 0 10px var(--core-glow);
+    border-color: var(--core-color);
+}
+
+/* Controls */
+.controls-panel {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 20;
+}
+
+.hud-btn {
+    background: rgba(6, 11, 25, 0.6);
+    border: 1px solid var(--panel-border);
+    color: var(--core-color);
+    padding: 10px 30px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.hud-btn:hover {
+    background: var(--core-color);
+    color: #000;
+    box-shadow: 0 0 15px var(--core-glow);
+}
+
+.start-btn.active {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+}
+
+/* Animations */
+@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+@keyframes pulse { 
+    0% { transform: scale(0.95); opacity: 0.8; }
+    100% { transform: scale(1.05); opacity: 1; }
+}
+@keyframes pulse-fast {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    100% { transform: scale(1.15); opacity: 1; }
+}
+@keyframes hue-rotate {
+    100% { filter: hue-rotate(45deg); }
+}
+@keyframes blink {
+    100% { opacity: 0.4; }
+}
+@keyframes slide-in {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Glitch Effect */
+.glitch-text {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch-text::before, .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--panel-bg);
+    opacity: 0.8;
+}
+
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -1px 0 red;
+    clip: rect(24px, 550px, 90px, 0);
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+    left: -2px;
+    text-shadow: -1px 0 blue;
+    clip: rect(85px, 550px, 140px, 0);
+    animation: glitch-anim 2.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% { clip: rect(10px, 9999px, 80px, 0); }
+    20% { clip: rect(40px, 9999px, 20px, 0); }
+    40% { clip: rect(80px, 9999px, 60px, 0); }
+    60% { clip: rect(20px, 9999px, 90px, 0); }
+    80% { clip: rect(60px, 9999px, 10px, 0); }
+    100% { clip: rect(90px, 9999px, 40px, 0); }
+}
