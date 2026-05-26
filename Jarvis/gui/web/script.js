@@ -68,8 +68,70 @@ async function processHostedCommand(cmd) {
             });
         }
     } catch (error) {
-        window.addLogEntry('Hosted API is unavailable', 'system');
+        const data = processStaticCommand(cmd);
+        window.addLogEntry(data.reply || 'Static web core ready');
+        if (Array.isArray(data.actions)) {
+            data.actions.forEach(action => {
+                if (action.type === 'open' && action.url) {
+                    window.open(action.url, '_blank', 'noopener');
+                }
+            });
+        }
     }
+}
+
+function processStaticCommand(command) {
+    const original = command.trim();
+    const cmd = original.toLowerCase();
+    const now = new Date();
+
+    if (!cmd) {
+        return { reply: 'Enter a command.', actions: [] };
+    }
+    if (cmd.includes('hello') || cmd.includes('hi') || cmd.includes('hey jarvis')) {
+        return { reply: 'Hello. Jarvis web core is online.', actions: [] };
+    }
+    if (cmd.includes('help') || cmd.includes('what can you do')) {
+        return { reply: 'Try time, date, joke, search cats, or youtube lo-fi.', actions: [] };
+    }
+    if (cmd.includes('time')) {
+        return { reply: 'The time is ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '.', actions: [] };
+    }
+    if (cmd.includes('date') || cmd.includes('today') || cmd.includes('day')) {
+        return { reply: 'Today is ' + now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + '.', actions: [] };
+    }
+    if (cmd.includes('joke') || cmd.includes('funny')) {
+        const jokes = [
+            'Why do programmers prefer dark mode? Because light attracts bugs.',
+            'Why do Java developers wear glasses? Because they do not C sharp.',
+            'A SQL query walks into a bar and asks: Can I join you?'
+        ];
+        return { reply: jokes[Math.floor(Math.random() * jokes.length)], actions: [] };
+    }
+
+    const youtubePrefixes = ['search youtube for ', 'youtube search ', 'play on youtube ', 'youtube '];
+    for (const prefix of youtubePrefixes) {
+        if (cmd.startsWith(prefix)) {
+            const query = original.slice(prefix.length).trim();
+            return {
+                reply: 'Opening YouTube results for ' + query + '.',
+                actions: [{ type: 'open', url: 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query) }]
+            };
+        }
+    }
+
+    const searchPrefixes = ['search for ', 'search ', 'google search ', 'google for ', 'look up ', 'find '];
+    for (const prefix of searchPrefixes) {
+        if (cmd.startsWith(prefix)) {
+            const query = original.slice(prefix.length).trim();
+            return {
+                reply: 'Opening Google results for ' + query + '.',
+                actions: [{ type: 'open', url: 'https://www.google.com/search?q=' + encodeURIComponent(query) }]
+            };
+        }
+    }
+
+    return { reply: 'Static web core can handle time, date, jokes, Google search, and YouTube search.', actions: [] };
 }
 
 async function refreshHostedStats() {
