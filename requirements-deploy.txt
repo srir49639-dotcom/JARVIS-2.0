@@ -1,0 +1,2 @@
+# The deployable web server uses only the Python standard library.
+# Keep this file so hosts that auto-detect Python dependencies have a stable target.

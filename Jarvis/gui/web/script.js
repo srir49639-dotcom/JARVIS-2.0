@@ -6,38 +6,82 @@ function updateTime() {
 setInterval(updateTime, 1000);
 updateTime();
 
-// Pywebview API interaction
+// Pywebview or hosted API interaction
 let isRunning = false;
+const hasPywebview = () => window.pywebview && window.pywebview.api;
 
 window.addEventListener('pywebviewready', function() {
     // Tell python backend that JS is ready
-    if(window.pywebview && window.pywebview.api) {
+    if(hasPywebview()) {
         window.pywebview.api.ui_ready();
     }
 });
 
 function toggleJarvis() {
-    if(window.pywebview && window.pywebview.api) {
+    if(hasPywebview()) {
         window.pywebview.api.toggle_jarvis();
+        return;
     }
+    const shouldActivate = !isRunning;
+    window.setAssistantState(shouldActivate ? 'ACTIVE' : 'IDLE');
+    window.addLogEntry(shouldActivate ? 'Web core initialized' : 'Web core paused');
 }
 
 function closeJarvis() {
-    if(window.pywebview && window.pywebview.api) {
+    if(hasPywebview()) {
         window.pywebview.api.close_jarvis();
+        return;
     }
+    window.setAssistantState('IDLE');
+    window.addLogEntry('Web core idle');
 }
 
 // Commands from input
 document.getElementById('cmd-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         const cmd = this.value;
-        if(cmd && window.pywebview && window.pywebview.api) {
+        if(cmd && hasPywebview()) {
             window.pywebview.api.process_manual_command(cmd);
+            this.value = '';
+        } else if (cmd) {
+            processHostedCommand(cmd);
             this.value = '';
         }
     }
 });
+
+async function processHostedCommand(cmd) {
+    window.addLogEntry(cmd, 'user');
+    try {
+        const response = await fetch('/api/command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command: cmd })
+        });
+        const data = await response.json();
+        window.addLogEntry(data.reply || 'No response');
+        if (Array.isArray(data.actions)) {
+            data.actions.forEach(action => {
+                if (action.type === 'open' && action.url) {
+                    window.open(action.url, '_blank', 'noopener');
+                }
+            });
+        }
+    } catch (error) {
+        window.addLogEntry('Hosted API is unavailable', 'system');
+    }
+}
+
+async function refreshHostedStats() {
+    if (hasPywebview()) return;
+    try {
+        const response = await fetch('/api/status');
+        const data = await response.json();
+        window.updateSystemStats(data.cpu || 0, data.ram || 0, data.battery, data.plugged);
+    } catch (error) {
+        window.updateSystemStats(0, 0, null, false);
+    }
+}
 
 // Functions exposed to Python backend via window object
 window.updateSystemStats = function(cpu, ram, battery, plugged) {
@@ -52,6 +96,9 @@ window.updateSystemStats = function(cpu, ram, battery, plugged) {
         document.getElementById('bat-bar').style.width = battery + '%';
     }
 };
+
+setInterval(refreshHostedStats, 5000);
+refreshHostedStats();
 
 window.addLogEntry = function(text, type='system') {
     const container = document.getElementById('log-container');
